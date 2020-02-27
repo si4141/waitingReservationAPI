@@ -124,4 +124,3 @@ STATIC_URL = '/static/'
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 LINE_ACCESS_TOKEN = os.environ.get('LINE_ACCESS_TOKEN')
-print(LINE_ACCESS_TOKEN)
