@@ -1,20 +1,20 @@
-from django.http import JsonResponse
-import django_filters
-from rest_framework import viewsets, filters, status
-from rest_framework.parsers import JSONParser
-from django.core.exceptions import PermissionDenied
+from rest_framework import status
 
-from .models import Reservation, User
+from .models import User
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import UserSerializer
 from django.conf import settings
 import requests
+from logging import getLogger
+logger = getLogger(__name__)
 
 
 @api_view(['POST'])
 def accept_line_web_hook(request):
+    logger.info('Call view')
     if request.method == 'POST':
+        logger.debug(f'{request.data}')
         data = request.data
         event_source = data.get('source')
         if event_source is None:
