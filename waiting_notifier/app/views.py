@@ -15,14 +15,22 @@ def accept_line_web_hook(request):
     logger.info('Call view')
     if request.method == 'POST':
         logger.debug(f'{request.data}')
-        data = request.data
+        data = request.data.get('events')
+        if data:
+            data = data[0]
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         event_source = data.get('source')
         if event_source is None:
             return Response(status.HTTP_400_BAD_REQUEST)
 
         event_type = data.get('type')
+        logger.debug(f'event_type: {event_type}')
         if event_type == 'follow':
+            logger.debug('follow event')
+
             source_type = event_source.get('type')
+            logger.debug(f'source_type: {source_type}')
             if source_type != 'user':
                 return Response(status.HTTP_400_BAD_REQUEST)
             user_id = event_source.get('userId')
