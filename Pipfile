@@ -12,6 +12,7 @@ django-filter = "*"
 requests = "*"
 python-dotenv = "*"
 gunicorn = "*"
+django-heroku = "*"
 
 [requires]
 python_version = "3.6"
