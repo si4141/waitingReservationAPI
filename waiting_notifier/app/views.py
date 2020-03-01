@@ -1,9 +1,10 @@
 from rest_framework import status
 
-from .models import User
+from .models import User, ReservationSlot
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializer import UserSerializer
+from rest_framework.views import APIView
+from .serializer import UserSerializer, ReservationSlotSerializer
 from django.conf import settings
 import requests
 from logging import getLogger
@@ -58,3 +59,11 @@ def accept_line_web_hook(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class ReservationSlotList(APIView):
+
+    def get(self, request, format=None):
+        reservation_slots = ReservationSlot.objects.filter(available_slot__gt=0)
+        serializer = ReservationSlotSerializer(reservation_slots, many=True)
+        return Response(serializer.data)

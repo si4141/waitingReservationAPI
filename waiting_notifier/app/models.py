@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import localtime
 
 
 # Create your models here.
@@ -13,7 +14,10 @@ class User(models.Model):
 
 class ReservationSlot(models.Model):
     start_time = models.DateTimeField()
-    available_slot = models.IntegerField(default=10)
+    available_slot = models.IntegerField(default=8)
+
+    def __str__(self):
+        return f'{localtime(self.start_time): %Y-%m-%d %H:%M:%S}'
 
 
 class Reservation(models.Model):
