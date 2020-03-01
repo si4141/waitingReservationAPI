@@ -17,4 +17,4 @@ class ReservationSlotSerializer(serializers.ModelSerializer):
 class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
-        fields =('reservation_slot', 'user', 'create_at')
+        fields = ('reservation_slot', 'user', 'create_at')
