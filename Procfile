@@ -1,0 +1,1 @@
+web: gunicorn waiting_notifier.waiting_notifier.wsgi

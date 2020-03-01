@@ -11,6 +11,7 @@ djangorestframework = "*"
 django-filter = "*"
 requests = "*"
 python-dotenv = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"
