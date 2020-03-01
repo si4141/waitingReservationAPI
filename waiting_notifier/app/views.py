@@ -18,13 +18,13 @@ def accept_line_web_hook(request):
         data = request.data
         event_source = data.get('source')
         if event_source is None:
-            raise Response(status.HTTP_400_BAD_REQUEST)
+            return Response(status.HTTP_400_BAD_REQUEST)
 
         event_type = data.get('type')
         if event_type == 'follow':
             source_type = event_source.get('type')
             if source_type != 'user':
-                raise ValueError()
+                return Response(status.HTTP_400_BAD_REQUEST)
             user_id = event_source.get('userId')
             response = requests.get(
                 f'https://api.line.me/v2/bot/profile/{user_id}',
@@ -47,8 +47,6 @@ def accept_line_web_hook(request):
                     )
                 except User.DoesNotExist:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        raise Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     else:
-        raise Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
