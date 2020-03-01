@@ -1,1 +1,1 @@
-web: gunicorn waiting_notifier.waiting_notifier.wsgi
+web: gunicorn --chdir  waiting_notifier waiting_notifier.wsgi
