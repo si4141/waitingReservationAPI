@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, ReservationSlot
+from .models import User, ReservationSlot, Reservation
 
 
 # Register your models here.
@@ -18,6 +18,7 @@ class ReservationSlotAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(ReservationSlot, ReservationSlotAdmin)
+admin.site.register(Reservation)
 
 
 if not ReservationSlot.objects.exists():

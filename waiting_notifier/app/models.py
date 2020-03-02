@@ -13,7 +13,7 @@ class User(models.Model):
 
 
 class ReservationSlot(models.Model):
-    start_time = models.DateTimeField()
+    start_time = models.DateTimeField(primary_key=True)
     available_slot = models.IntegerField(default=8)
 
     def __str__(self):

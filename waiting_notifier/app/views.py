@@ -1,11 +1,12 @@
 from rest_framework import status
 
-from .models import User, ReservationSlot
+from .models import User, ReservationSlot, Reservation
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import UserSerializer, ReservationSlotSerializer
+from .serializer import UserSerializer, ReservationSlotSerializer, ReservationSerializer
 from django.conf import settings
+from django.http import Http404
 import requests
 from logging import getLogger
 logger = getLogger(__name__)
@@ -64,6 +65,50 @@ def accept_line_web_hook(request):
 class ReservationSlotList(APIView):
 
     def get(self, request, format=None):
-        reservation_slots = ReservationSlot.objects.filter(available_slot__gt=0)
+        reservation_slots = ReservationSlot.objects.all()
         serializer = ReservationSlotSerializer(reservation_slots, many=True)
         return Response(serializer.data)
+
+
+class ReservationSlotDetail(APIView):
+
+    def get_slot(self, start_time):
+        try:
+            import datetime
+            start_time = datetime.datetime.strptime(start_time, '%Y%m%d%H%M').astimezone(
+                datetime.timezone(datetime.timedelta(hours=9), 'JST')
+            )
+            return ReservationSlot.objects.get(start_time=start_time)
+        except ReservationSlot.DoesNotExist:
+            raise Http404
+        except ValueError:
+            raise Http404
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get(self, request, start_time, format=None):
+        slot = self.get_slot(start_time)
+        serializer = ReservationSlotSerializer(slot)
+        return Response(serializer.data)
+
+    def post(self, request, start_time, format=None):
+        user_id = request.data.get('userId')
+        user = self.get_user(user_id)
+
+        slot = self.get_slot(start_time)
+
+        serializer = ReservationSerializer(
+            data={'user': user.user_id, 'reservation_slot': slot.start_time}
+        )
+        if serializer.is_valid():
+            if ReservationSlotSerializer(slot).data['remaining'] and UserSerializer(user).data['user_id']:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(data={'message': 'No available slot', 'start_time': slot.start_time}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
